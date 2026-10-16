@@ -1,195 +1,342 @@
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Super Adventure 2.0</title>
-<style>
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(#b00035, #4a0018);
-  color: white;
-  text-align: center;
-}
-header {
-  background: #61001b;
-  padding: 18px 10px;
-  border-bottom: 4px solid #ffcc00;
-}
-h1 {
-  margin: 0;
-  color: #ffcc00;
-  font-size: 30px;
-}
-main {
-  padding: 12px;
-  max-width: 760px;
-  margin: auto;
-}
-.painel {
-  background: #72001f;
-  border: 2px solid #ffcc00;
-  border-radius: 16px;
-  padding: 15px;
-  margin: 12px 0;
-}
-button, select {
-  background: #ffcc00;
-  color: #4a0010;
-  border: 2px solid white;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 5px;
-  font-size: 16px;
-  font-weight: bold;
-}
-.personagem {
-  display: inline-block;
-  min-width: 120px;
-  padding: 10px;
-  background: #a90035;
-  border: 2px solid #ffcc00;
-  border-radius: 12px;
-  margin: 4px;
-  cursor: pointer;
-}
-.personagem.selecionado {
-  background: #ffcc00;
-  color: #4a0010;
-}
-.heroi {
-  font-size: 42px;
-}
-#campo {
-  position: relative;
-  height: 340px;
-  overflow: hidden;
-  background: linear-gradient(#83d8f5 0 62%, #65b956 62%);
-  border: 4px solid #ffcc00;
-  border-radius: 14px;
-  margin-top: 12px;
-  touch-action: manipulation;
-}
-#jogador {
-  position: absolute;
-  left: 25px;
-  bottom: 58px;
-  font-size: 42px;
-  z-index: 3;
-}
-#chao {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 58px;
-  background: #8b512d;
-  border-top: 6px solid #62b84b;
-}
-.item, .inimigo {
-  position: absolute;
-  font-size: 30px;
-}
-#chefao {
-  display: none;
-  position: absolute;
-  bottom: 58px;
-  right: 12px;
-  font-size: 58px;
-}
-#mensagem {
-  color: #ffec9e;
-  font-weight: bold;
-  min-height: 24px;
-}
-.controles {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  max-width: 260px;
-  margin: 12px auto;
-}
-.controles button {
-  font-size: 22px;
-  padding: 14px 5px;
-}
-.vazio {
-  visibility: hidden;
-}
-</style>
-</head>
-<body>
-<header>
-  <h1>⚔️ THE SUPER ADVENTURE ⚔️</h1>
-  <p>Versão 2.0 — A aventura do reino!</p>
-</header>
-<main>
-<section class="painel">
-  <h2>Escolha seu personagem</h2>
-  <div class="personagem selecionado" id="opcaoLuan"
-       onclick="escolher('luan')">
-    <div class="heroi">🛡️</div>
-    <strong>Cavaleiro Luan</strong>
-  </div>
-  <div class="personagem" id="opcaoIzabelly"
-       onclick="escolher('izabelly')">
-    <div class="heroi">👸</div>
-    <strong>Princesa Izabelly</strong>
-  </div>
-  <div class="personagem" id="opcaoArqueiro"
-       onclick="escolher('arqueiro')">
-    <div class="heroi">🏹</div>
-    <strong>Arqueiro</strong>
-  </div>
-  <div class="personagem" id="opcaoMago"
-       onclick="escolher('mago')">
-    <div class="heroi">🧙</div>
-    <strong>Mago do Trovão</strong>
-  </div>
-  <div class="personagem" id="opcaoGuardiao"
-       onclick="escolher('guardiao')">
-    <div class="heroi">💚</div>
-    <strong>Guardião da Luz</strong>
-  </div>
+/* THE SUPER ADVENTURE 2.0 */
 
-  <p>Dificuldade:</p>
-  <select id="dificuldade">
-    <option value="facil">Fácil</option>
-    <option value="medio" selected>Médio</option>
-    <option value="dificil">Difícil</option>
-  </select>
-  <p id="mensagem">Escolha seu herói e comece!</p>
-  <button onclick="iniciar()">▶ COMEÇAR A AVENTURA</button>
-</section>
+const herois = {
+  luan: { emoji: "🛡️", nome: "Cavaleiro Luan" },
+  izabelly: { emoji: "👸", nome: "Princesa Izabelly" },
+  arqueiro: { emoji: "🏹", nome: "Arqueiro" },
+  mago: { emoji: "🧙", nome: "Mago do Trovão" },
+  guardiao: { emoji: "💚", nome: "Guardião da Luz" }
+};
 
-<section class="painel">
-  <h2>🏰 Sua aventura</h2>
-  <p>Fase: <span id="fase">1</span>/5</p>
-  <p>❤️ Vidas: <span id="vidas">3</span></p>
-  <p>⭐ Estrelas: <span id="estrelas">0</span>/50</p>
-  <p>✨ Nível: <span id="nivel">1</span>/5</p>
-  <div id="campo">
-    <div id="chao"></div>
-    <div id="jogador">🛡️</div>
-    <div id="chefao">👹</div>
-  </div>
-  <div class="controles">
-    <span class="vazio"></span>
-    <button onclick="mover(0,-1)">⬆️</button>
-    <span class="vazio"></span>
-    <button onclick="mover(-1,0)">⬅️</button>
-    <button onclick="mover(0,1)">⬇️</button>
-    <button onclick="mover(1,0)">➡️</button>
-  </div>
-  <button onclick="atacar()">⚔️ ATACAR</button>
-  <button onclick="especial()">✨ PODER ESPECIAL</button>
-  <button onclick="musica()">🎵 Música</button>
-  <button onclick="avancar()">➡️ Avançar fase</button>
-</section>
-</main>
-</body>
-</html>
+let heroiAtual = "luan";
+let faseAtual = 1;
+let vidas = 3;
+let estrelas = 0;
+let nivel = 1;
+let ativo = false;
+let posX = 25;
+let itens = [];
+let inimigos = [];
+let vidaChefe = 5;
+let invulneravel = false;
+let audio = null;
+let musicaLigada = false;
+let temporizadorMusica = null;
+let notaAtual = 0;
+
+const el = id => document.getElementById(id);
+
+function mensagem(texto) {
+  el("mensagem").textContent = texto;
+}
+
+function escolher(nome) {
+  if (!herois[nome]) return;
+  heroiAtual = nome;
+
+  document.querySelectorAll(".personagem")
+    .forEach(p => p.classList.remove("selecionado"));
+
+  const id = "opcao" + nome[0].toUpperCase() + nome.slice(1);
+  if (el(id)) el(id).classList.add("selecionado");
+
+  el("jogador").textContent = herois[nome].emoji;
+  mensagem("Você escolheu " + herois[nome].nome + "!");
+}
+
+function atualizarPainel() {
+  el("fase").textContent = faseAtual;
+  el("vidas").textContent = vidas;
+  el("estrelas").textContent = estrelas;
+  el("nivel").textContent = nivel;
+}
+
+function limparCampo() {
+  document.querySelectorAll("#campo .item, #campo .inimigo")
+    .forEach(o => o.remove());
+
+  itens = [];
+  inimigos = [];
+}
+
+function criarObjeto(emoji, classe, x, base, lista) {
+  const o = document.createElement("div");
+  o.className = classe;
+  o.textContent = emoji;
+  o.style.left = x + "px";
+  o.style.bottom = base + "px";
+  el("campo").appendChild(o);
+  lista.push({ elemento: o, x, vivo: true });
+}
+
+function montarFase() {
+  limparCampo();
+
+  posX = 25;
+  el("jogador").style.left = posX + "px";
+  el("jogador").style.bottom = "58px";
+
+  const chefe = el("chefao");
+  chefe.style.display = faseAtual === 5 ? "block" : "none";
+  chefe.textContent = "👹";
+  vidaChefe = 5;
+
+  if (faseAtual < 5) {
+    const largura = el("campo").clientWidth;
+    const quantidade = 3 + faseAtual;
+
+    for (let i = 0; i < quantidade; i++) {
+      const x = Math.min(
+        75 + i * ((largura - 130) / Math.max(1, quantidade - 1)),
+        largura - 42
+      );
+
+      criarObjeto("⭐", "item", x, 80 + (i % 2) * 55, itens);
+
+      if (i % 2 === 0) {
+        criarObjeto(
+          ["👾", "🦇", "🐗"][i % 3],
+          "inimigo",
+          Math.min(x + 30, largura - 42),
+          58,
+          inimigos
+        );
+      }
+    }
+    mensagem("Fase " + faseAtual + ": pegue as estrelas e derrote os inimigos!");
+  } else {
+    mensagem("Fase final! Derrote o chefão com seus ataques!");
+  }
+
+  atualizarPainel();
+}
+
+function iniciar() {
+  if (ativo) {
+    mensagem("Você já está jogando! Continue sua aventura.");
+    return;
+  }
+
+  if (vidas <= 0) reiniciar();
+
+  ativo = true;
+  montarFase();
+  mensagem("A aventura começou! Boa sorte!");
+}
+
+function mover(dx, dy) {
+  if (!ativo) {
+    mensagem("Toque em COMEÇAR A AVENTURA primeiro!");
+    return;
+  }
+
+  const jogador = el("jogador");
+  const largura = el("campo").clientWidth;
+
+  if (dx !== 0) {
+    posX = Math.max(0, Math.min(largura - 50, posX + dx * 28));
+    jogador.style.left = posX + "px";
+  }
+
+  if (dy === -1) {
+    jogador.style.bottom = "125px";
+    setTimeout(() => {
+      jogador.style.bottom = "58px";
+      verificarColisoes();
+    }, 350);
+  } else if (dy === 1) {
+    jogador.style.bottom = "58px";
+  }
+
+  verificarColisoes();
+}
+
+function verificarColisoes() {
+  if (!ativo) return;
+
+  itens.forEach(item => {
+    if (!item.vivo || Math.abs(posX - item.x) > 32) return;
+
+    item.vivo = false;
+    item.elemento.remove();
+    estrelas = Math.min(50, estrelas + 1);
+    nivel = Math.min(5, 1 + Math.floor(estrelas / 10));
+    atualizarPainel();
+    mensagem("⭐ Estrela coletada!");
+  });
+
+  inimigos.forEach(inimigo => {
+    if (!inimigo.vivo || Math.abs(posX - inimigo.x) > 22 || invulneravel) return;
+
+    inimigo.vivo = false;
+    inimigo.elemento.remove();
+    vidas--;
+    invulneravel = true;
+    setTimeout(() => invulneravel = false, 900);
+    atualizarPainel();
+
+    if (vidas <= 0) {
+      ativo = false;
+      mensagem("Fim de jogo! Toque em Reiniciar para tentar novamente.");
+    } else {
+      mensagem("Cuidado! Você perdeu uma vida.");
+    }
+  });
+}
+
+function atacar() {
+  if (!ativo) {
+    mensagem("Comece a aventura primeiro!");
+    return;
+  }
+
+  if (faseAtual === 5) {
+    ferirChefe(1);
+    return;
+  }
+
+  const alvo = inimigos.find(i =>
+    i.vivo && Math.abs(posX - i.x) < 100
+  );
+
+  if (!alvo) {
+    mensagem("Aproxime-se de um inimigo para atacar!");
+    return;
+  }
+
+  alvo.vivo = false;
+  alvo.elemento.remove();
+  mensagem("⚔️ Inimigo derrotado!");
+}
+
+function ferirChefe(dano) {
+  vidaChefe -= dano;
+
+  if (vidaChefe <= 0) {
+    el("chefao").textContent = "💥";
+    ativo = false;
+    mensagem("🏆 Vitória! Você derrotou o chefão e salvou o reino!");
+  } else {
+    mensagem("O chefão ainda tem " + vidaChefe + " pontos de vida!");
+  }
+}
+
+function especial() {
+  if (!ativo) {
+    mensagem("Comece a aventura primeiro!");
+    return;
+  }
+
+  if (faseAtual === 5) {
+    ferirChefe(2);
+    return;
+  }
+
+  let derrotados = 0;
+
+  inimigos.forEach(i => {
+    if (i.vivo && Math.abs(posX - i.x) < 180) {
+      i.vivo = false;
+      i.elemento.remove();
+      derrotados++;
+    }
+  });
+
+  if (heroiAtual === "mago" || heroiAtual === "guardiao") {
+    estrelas = Math.min(50, estrelas + 2);
+  }
+
+  atualizarPainel();
+  mensagem("✨ " + herois[heroiAtual].nome +
+    " usou seu poder especial! Inimigos derrotados: " + derrotados);
+}
+
+function avancar() {
+  if (!ativo) {
+    mensagem("Comece ou reinicie a aventura primeiro!");
+    return;
+  }
+
+  if (faseAtual >= 5) {
+    mensagem("Derrote o chefão para terminar a aventura!");
+    return;
+  }
+
+  faseAtual++;
+  nivel = Math.max(nivel, faseAtual);
+  montarFase();
+}
+
+function reiniciar() {
+  ativo = false;
+  faseAtual = 1;
+  vidas = 3;
+  estrelas = 0;
+  nivel = 1;
+  posX = 25;
+  invulneravel = false;
+  limparCampo();
+  el("chefao").style.display = "none";
+  el("jogador").textContent = herois[heroiAtual].emoji;
+  atualizarPainel();
+  mensagem("Jogo reiniciado! Toque em Começar a Aventura.");
+}
+
+/* Música original simples, gerada pelo navegador */
+function musica() {
+  if (musicaLigada) {
+    musicaLigada = false;
+    clearTimeout(temporizadorMusica);
+    if (audio) audio.suspend();
+    mensagem("Música pausada.");
+    return;
+  }
+
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    audio.resume();
+    musicaLigada = true;
+
+    const notas = [261.63, 329.63, 392, 329.63, 293.66, 349.23, 440, 392];
+
+    function tocarNota() {
+      if (!musicaLigada) return;
+
+      const oscilador = audio.createOscillator();
+      const volume = audio.createGain();
+
+      oscilador.type = "triangle";
+      oscilador.frequency.value = notas[notaAtual % notas.length];
+      volume.gain.setValueAtTime(0.0001, audio.currentTime);
+      volume.gain.exponentialRampToValueAtTime(0.045, audio.currentTime + 0.04);
+      volume.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.26);
+
+      oscilador.connect(volume);
+      volume.connect(audio.destination);
+      oscilador.start();
+      oscilador.stop(audio.currentTime + 0.28);
+
+      notaAtual++;
+      temporizadorMusica = setTimeout(tocarNota, 300);
+    }
+
+    tocarNota();
+    mensagem("🎵 Música de aventura ligada!");
+  } catch (erro) {
+    musicaLigada = false;
+    mensagem("Não foi possível iniciar o áudio. Tente novamente.");
+  }
+}
+
+/* Controles de teclado para jogar no computador */
+document.addEventListener("keydown", evento => {
+  if (evento.key === "ArrowLeft") mover(-1, 0);
+  if (evento.key === "ArrowRight") mover(1, 0);
+  if (evento.key === "ArrowUp" || evento.key === " ") mover(0, -1);
+  if (evento.key === "ArrowDown") mover(0, 1);
+  if (evento.key === "Enter") atacar();
+});
+
+/* Preparação inicial */
+atualizarPainel();
