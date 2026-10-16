@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Super Adventure 2.0</title>
+<style>
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(#b00035, #4a0018);
+  color: white;
+  text-align: center;
+}
+header {
+  background: #61001b;
+  padding: 18px 10px;
+  border-bottom: 4px solid #ffcc00;
+}
+h1 {
+  margin: 0;
+  color: #ffcc00;
+  font-size: 30px;
+}
+main {
+  padding: 12px;
+  max-width: 760px;
+  margin: auto;
+}
+.painel {
+  background: #72001f;
+  border: 2px solid #ffcc00;
+  border-radius: 16px;
+  padding: 15px;
+  margin: 12px 0;
+}
+button, select {
+  background: #ffcc00;
+  color: #4a0010;
+  border: 2px solid white;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 5px;
+  font-size: 16px;
+  font-weight: bold;
+}
+.personagem {
+  display: inline-block;
+  min-width: 120px;
+  padding: 10px;
+  background: #a90035;
+  border: 2px solid #ffcc00;
+  border-radius: 12px;
+  margin: 4px;
+  cursor: pointer;
+}
+.personagem.selecionado {
+  background: #ffcc00;
+  color: #4a0010;
+}
+.heroi {
+  font-size: 42px;
+}
+#campo {
+  position: relative;
+  height: 340px;
+  overflow: hidden;
+  background: linear-gradient(#83d8f5 0 62%, #65b956 62%);
+  border: 4px solid #ffcc00;
+  border-radius: 14px;
+  margin-top: 12px;
+  touch-action: manipulation;
+}
+#jogador {
+  position: absolute;
+  left: 25px;
+  bottom: 58px;
+  font-size: 42px;
+  z-index: 3;
+}
+#chao {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 58px;
+  background: #8b512d;
+  border-top: 6px solid #62b84b;
+}
+.item, .inimigo {
+  position: absolute;
+  font-size: 30px;
+}
+#chefao {
+  display: none;
+  position: absolute;
+  bottom: 58px;
+  right: 12px;
+  font-size: 58px;
+}
+#mensagem {
+  color: #ffec9e;
+  font-weight: bold;
+  min-height: 24px;
+}
+.controles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  max-width: 260px;
+  margin: 12px auto;
+}
+.controles button {
+  font-size: 22px;
+  padding: 14px 5px;
+}
+.vazio {
+  visibility: hidden;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚔️ THE SUPER ADVENTURE ⚔️</h1>
+  <p>Versão 2.0 — A aventura do reino!</p>
+</header>
+<main>
+<section class="painel">
+  <h2>Escolha seu personagem</h2>
+  <div class="personagem selecionado" id="opcaoLuan"
+       onclick="escolher('luan')">
+    <div class="heroi">🛡️</div>
+    <strong>Cavaleiro Luan</strong>
+  </div>
+  <div class="personagem" id="opcaoIzabelly"
+       onclick="escolher('izabelly')">
+    <div class="heroi">👸</div>
+    <strong>Princesa Izabelly</strong>
+  </div>
+  <div class="personagem" id="opcaoArqueiro"
+       onclick="escolher('arqueiro')">
+    <div class="heroi">🏹</div>
+    <strong>Arqueiro</strong>
+  </div>
+  <div class="personagem" id="opcaoMago"
+       onclick="escolher('mago')">
+    <div class="heroi">🧙</div>
+    <strong>Mago do Trovão</strong>
+  </div>
+  <div class="personagem" id="opcaoGuardiao"
+       onclick="escolher('guardiao')">
+    <div class="heroi">💚</div>
+    <strong>Guardião da Luz</strong>
+  </div>
+
+  <p>Dificuldade:</p>
+  <select id="dificuldade">
+    <option value="facil">Fácil</option>
+    <option value="medio" selected>Médio</option>
+    <option value="dificil">Difícil</option>
+  </select>
+  <p id="mensagem">Escolha seu herói e comece!</p>
+  <button onclick="iniciar()">▶ COMEÇAR A AVENTURA</button>
+</section>
+
+<section class="painel">
+  <h2>🏰 Sua aventura</h2>
+  <p>Fase: <span id="fase">1</span>/5</p>
+  <p>❤️ Vidas: <span id="vidas">3</span></p>
+  <p>⭐ Estrelas: <span id="estrelas">0</span>/50</p>
+  <p>✨ Nível: <span id="nivel">1</span>/5</p>
+  <div id="campo">
+    <div id="chao"></div>
+    <div id="jogador">🛡️</div>
+    <div id="chefao">👹</div>
+  </div>
+  <div class="controles">
+    <span class="vazio"></span>
+    <button onclick="mover(0,-1)">⬆️</button>
+    <span class="vazio"></span>
+    <button onclick="mover(-1,0)">⬅️</button>
+    <button onclick="mover(0,1)">⬇️</button>
+    <button onclick="mover(1,0)">➡️</button>
+  </div>
+  <button onclick="atacar()">⚔️ ATACAR</button>
+  <button onclick="especial()">✨ PODER ESPECIAL</button>
+  <button onclick="musica()">🎵 Música</button>
+  <button onclick="avancar()">➡️ Avançar fase</button>
+</section>
+</main>
+</body>
+</html>
